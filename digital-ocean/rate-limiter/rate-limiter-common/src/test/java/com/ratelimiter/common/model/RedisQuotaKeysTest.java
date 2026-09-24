@@ -18,5 +18,7 @@ class RedisQuotaKeysTest {
                 .isEqualTo("rl:quota:burstable:payments:11111111-1111-1111-1111-111111111111");
         assertThat(RedisQuotaKeys.sustainedKey("payments", tenantId))
                 .isEqualTo("rl:quota:sustained:payments:11111111-1111-1111-1111-111111111111");
+        assertThat(RedisQuotaKeys.dataplaneHeartbeatKey("node-a"))
+                .isEqualTo("rl:dataplane:hb:node-a");
     }
 }

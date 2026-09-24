@@ -13,6 +13,13 @@ rate-limiter:
   # redis (default) | memory
   store: redis
   config-cache-ttl-ms: 1000
+  degraded:
+    # When Redis is down: use last-known config + local limits of capacity/N
+    enabled: true
+    heartbeat-interval-ms: 5000
+    heartbeat-ttl-ms: 15000
+    # Optional stable id (defaults to random UUID per process)
+    # node-id: dataplane-1
 
 management:
   endpoints:

@@ -106,6 +106,23 @@ Key metrics:
 
 Evaluate traffic is logged at **DEBUG**; config create/update/delete and Redis sync at **INFO**.
 
+### Degraded mode (Redis down)
+
+When `rate-limiter.store=redis` and Redis becomes unreachable, each dataplane:
+
+1. Serves **last-known-good** configuration from a local cache (survives TTL expiry)
+2. Uses a cached **active node count `N`** from Redis heartbeats (`rl:dataplane:hb:{nodeId}`)
+3. Enforces limits locally at **`ceil(capacity / N)`** per bucket (approx. fair share)
+
+| Metric / log | Meaning |
+|--------------|---------|
+| `ratelimiter.dataplane.nodes` | Cached active dataplane count |
+| `ratelimiter.evaluate.degraded` | Evaluates served in degraded mode |
+| reason `DEGRADED_OK` / `DEGRADED_RATE_LIMITED` | Local allow/deny |
+| WARN logs | Heartbeat failure / Redis failover |
+
+Toggle: `rate-limiter.degraded.enabled` (default `true`).
+
 ## Tests
 
 | Area | What is covered |

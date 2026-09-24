@@ -39,4 +39,15 @@ public class RateLimitMetrics {
                 "reason", safeReason
         ).increment();
     }
+
+    public void recordDegraded(String namespace, boolean allowed, int nodeCount) {
+        String outcome = allowed ? "allowed" : "denied";
+        String safeNamespace = namespace == null || namespace.isBlank() ? "unknown" : namespace;
+        registry.counter(
+                "ratelimiter.evaluate.degraded",
+                "namespace", safeNamespace,
+                "outcome", outcome,
+                "nodes", String.valueOf(Math.max(1, nodeCount))
+        ).increment();
+    }
 }

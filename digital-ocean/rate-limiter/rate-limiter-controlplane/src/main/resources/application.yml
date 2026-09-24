@@ -26,7 +26,29 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        ratelimiter.configuration: true
+      percentiles:
+        ratelimiter.configuration: 0.5, 0.95, 0.99
+
+logging:
+  level:
+    root: INFO
+    com.ratelimiter.controlplane: INFO
+    com.ratelimiter.controlplane.service: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{40} - %msg%n"
 
 ---
 spring:

@@ -2,6 +2,8 @@ package com.ratelimiter.dataplane.service;
 
 import com.ratelimiter.common.dto.EvaluationRequestDTO;
 import com.ratelimiter.common.dto.EvaluationResponseDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 @Service
 public class EvaluateService {
+
+    private static final Logger log = LoggerFactory.getLogger(EvaluateService.class);
 
     private final RateLimitEvaluator rateLimitEvaluator;
 
@@ -37,7 +41,9 @@ public class EvaluateService {
             return request.getTenantId();
         }
         if (request.getApiKey() != null && !request.getApiKey().isBlank()) {
-            return UUID.nameUUIDFromBytes(request.getApiKey().getBytes());
+            UUID derived = UUID.nameUUIDFromBytes(request.getApiKey().getBytes());
+            log.debug("resolved tenantId from apiKey namespace={} tenantId={}", request.getNamespace(), derived);
+            return derived;
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tenantId or apiKey is required");
     }

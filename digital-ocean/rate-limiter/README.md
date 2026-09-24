@@ -89,6 +89,23 @@ java -jar rate-limiter-controlplane/target/rate-limiter-controlplane-1.0.0-SNAPS
 java -jar rate-limiter-dataplane/target/rate-limiter-dataplane-1.0.0-SNAPSHOT.jar
 ```
 
+## Observability
+
+Both services expose Actuator + Prometheus:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `/actuator/health` | Liveness/readiness |
+| `/actuator/metrics` | Micrometer metric names |
+| `/actuator/prometheus` | Prometheus scrape format |
+
+Key metrics:
+
+- **Dataplane:** `ratelimiter.evaluate` (timer), `ratelimiter.evaluate.requests` (counter) — tags: `namespace`, `outcome`, `reason`
+- **Controlplane:** `ratelimiter.configuration` (timer), `ratelimiter.configuration.requests` (counter) — tags: `operation`, `namespace`, `status`
+
+Evaluate traffic is logged at **DEBUG**; config create/update/delete and Redis sync at **INFO**.
+
 ## Tests
 
 | Area | What is covered |

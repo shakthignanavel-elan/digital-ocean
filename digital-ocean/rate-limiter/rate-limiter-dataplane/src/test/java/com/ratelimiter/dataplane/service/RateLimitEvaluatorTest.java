@@ -8,6 +8,7 @@ import com.ratelimiter.common.model.TokenConfiguration;
 import com.ratelimiter.dataplane.algorithm.AlgorithmEvaluatorFactory;
 import com.ratelimiter.dataplane.algorithm.SlidingWindowEvaluator;
 import com.ratelimiter.dataplane.algorithm.TokenBucketEvaluator;
+import com.ratelimiter.dataplane.metrics.RateLimitMetrics;
 import com.ratelimiter.dataplane.spi.ConfigurationStore;
 import com.ratelimiter.dataplane.spi.DualBucketQuotaStore;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,9 @@ class RateLimitEvaluatorTest {
     @Mock
     private DualBucketQuotaStore dualBucketQuotaStore;
 
+    @Mock
+    private RateLimitMetrics metrics;
+
     @InjectMocks
     private RateLimitEvaluator evaluator;
 
@@ -55,6 +59,7 @@ class RateLimitEvaluatorTest {
         assertThat(result.allowed()).isFalse();
         assertThat(result.reason()).isEqualTo("NO_CONFIG");
         verifyNoInteractions(evaluatorFactory, dualBucketQuotaStore);
+        verify(metrics).recordEvaluate(eq(NAMESPACE), eq(false), eq("NO_CONFIG"), anyLong());
     }
 
     @Test
@@ -84,6 +89,7 @@ class RateLimitEvaluatorTest {
         assertThat(result.burstableEvaluator().algorithm()).isEqualTo(RateLimitAlgorithm.TOKEN_BUCKET);
         assertThat(result.sustainedEvaluator().algorithm()).isEqualTo(RateLimitAlgorithm.SLIDING_WINDOW);
         verify(dualBucketQuotaStore).tryConsume(any(), any(), any(), any(), anyLong());
+        verify(metrics).recordEvaluate(eq(NAMESPACE), eq(true), eq("OK"), anyLong());
     }
 
     private ConfigurationDTO sampleConfig() {

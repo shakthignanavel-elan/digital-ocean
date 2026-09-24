@@ -7,6 +7,7 @@ import com.ratelimiter.common.model.RateLimitConfig;
 import com.ratelimiter.common.model.TokenAvailability;
 import com.ratelimiter.common.model.TokenConfiguration;
 import com.ratelimiter.controlplane.entity.ConfigurationEntity;
+import com.ratelimiter.controlplane.metrics.ConfigurationMetrics;
 import com.ratelimiter.controlplane.redis.RedisQuotaStore;
 import com.ratelimiter.controlplane.repository.ConfigurationRepository;
 import com.ratelimiter.controlplane.support.TestFixtures;
@@ -40,6 +41,9 @@ class ConfigurationServiceTest {
 
     @Mock
     private RedisQuotaStore redisQuotaStore;
+
+    @Mock
+    private ConfigurationMetrics metrics;
 
     @InjectMocks
     private ConfigurationService configurationService;

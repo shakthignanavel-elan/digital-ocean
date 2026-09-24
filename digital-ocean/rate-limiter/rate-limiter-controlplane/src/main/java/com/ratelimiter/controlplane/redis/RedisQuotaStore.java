@@ -8,6 +8,8 @@ import com.ratelimiter.common.enums.RateLimitAlgorithm;
 import com.ratelimiter.common.model.RateLimitConfig;
 import com.ratelimiter.common.model.RedisQuotaKeys;
 import com.ratelimiter.common.model.TokenAvailability;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ import java.util.UUID;
  */
 @Component
 public class RedisQuotaStore {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisQuotaStore.class);
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
@@ -62,6 +66,7 @@ public class RedisQuotaStore {
                 RedisQuotaKeys.sustainedKey(namespace, tenantId),
                 config.getFixedRateLimitConfig()
         );
+        log.info("synced configuration to redis namespace={} tenantId={}", namespace, tenantId);
     }
 
     public void deleteConfiguration(String namespace, UUID tenantId) {
@@ -76,6 +81,7 @@ public class RedisQuotaStore {
                 RedisQuotaKeys.eventsKey(sustained),
                 RedisQuotaKeys.eventsKey(sustained) + ":seq"
         ));
+        log.info("deleted configuration from redis namespace={} tenantId={}", namespace, tenantId);
     }
 
     public Optional<ConfigurationDTO> findConfiguration(String namespace, UUID tenantId) {
